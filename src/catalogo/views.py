@@ -17,41 +17,37 @@ from .forms import (
 
 @login_required
 def Inicio(request):
+    # guardamos lo que se introdujo en los campos de busqueda
     busqueda = request.POST.get("buscar")
     busquedaCurso = request.POST.get("buscarVideo")
     herramientas = None
     videos = None
+    # Si el usuario busco gerramientas entra a este if
     if busqueda:
+        # Filtramos las herramientas con respecto a lo que tiene busqueda
         herramientas = Herramientas.objects.filter(
             Q(nombre__icontains=busqueda) |
             Q(clasificacion__nombre__icontains=busqueda)
         ).distinct()
+        # Si busco un curso entra a este elif 
     elif busquedaCurso:
+        # Filtramos las herramientas con respecto a lo que tiene busquedaCurso
         videos = Videos.objects.filter(
             Q(nombre__icontains=busquedaCurso) |
             Q(unidad__nombre__icontains=busquedaCurso)
         )
     else:
+        # Si no se esta busando 1 herramienta o curso especifico, se devuelven todos los cursos  y las herramientas
         videos = Videos.objects.all()
         herramientas = Herramientas.objects.all()
-
+        # Creamos un diccionario donde ponemos lo que vamos a mandar al template
     data = {
         'Herramientas': herramientas,
         'Videos': videos,
         'Texto': 'Textito'
     }
+    # Usamos el metodo render para renderizar los datos que estan dentro del diccionario data en la plantilla index.html
     return render(request, 'index.html', data)
-
-
-def vistaLoginRegister(request):
-    formRegister = FormRegister()
-
-    data = {
-        'formRegister': formRegister,
-        'nombre': 'Emilio',
-    }
-    return render(request, 'registration/login.html', data)
-
 
 def crearUsuario(request):
     if request.method == 'POST':

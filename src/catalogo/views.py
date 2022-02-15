@@ -20,8 +20,6 @@ def Inicio(request):
     # guardamos lo que se introdujo en los campos de busqueda
     busqueda = request.POST.get("buscar")
     busquedaCurso = request.POST.get("buscarVideo")
-    herramientas = None
-    videos = None
     # Si el usuario busco gerramientas entra a este if
     if busqueda:
         # Filtramos las herramientas con respecto a lo que tiene busqueda
@@ -29,6 +27,9 @@ def Inicio(request):
             Q(nombre__icontains=busqueda) |
             Q(clasificacion__nombre__icontains=busqueda)
         ).distinct()
+        data = {
+            'Herramientas': herramientas,
+        }
         # Si busco un curso entra a este elif 
     elif busquedaCurso:
         # Filtramos las herramientas con respecto a lo que tiene busquedaCurso
@@ -36,16 +37,18 @@ def Inicio(request):
             Q(nombre__icontains=busquedaCurso) |
             Q(unidad__nombre__icontains=busquedaCurso)
         )
+        data = {
+            'Videos': videos,
+        }
     else:
         # Si no se esta busando 1 herramienta o curso especifico, se devuelven todos los cursos  y las herramientas
         videos = Videos.objects.all()
         herramientas = Herramientas.objects.all()
         # Creamos un diccionario donde ponemos lo que vamos a mandar al template
-    data = {
-        'Herramientas': herramientas,
-        'Videos': videos,
-        'Texto': 'Textito'
-    }
+        data = {
+            'Herramientas': herramientas,
+            'Videos': videos,
+        }
     # Usamos el metodo render para renderizar los datos que estan dentro del diccionario data en la plantilla index.html
     return render(request, 'index.html', data)
 
